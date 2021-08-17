@@ -1,0 +1,14 @@
+html, body, canvas {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+canvas {
+  display: block;
+}
