@@ -4,8 +4,8 @@ import 'dart:typed_data' show Float32List;
 import 'dart:web_gl';
 
 void main() {
-  final canvas = document.querySelector('canvas') as CanvasElement;
-  final context = canvas.getContext('webgl') as RenderingContext;
+  final canvas = document.querySelector('canvas').as<CanvasElement>();
+  final context = canvas.getContext('webgl').as<RenderingContext>();
 
   final vertexShader = createShader(context, WebGL.VERTEX_SHADER, vertexShaderSource);
   final fragmentShader = createShader(context, WebGL.FRAGMENT_SHADER, fragmentShaderSource);
@@ -39,11 +39,11 @@ void main() {
       ..uniform2f(uResolutionLocation, width, height);
 
     for (var i = 0; i < 50; ++i) {
-      final left = random.nextInt(300);
-      final width = random.nextInt(300);
-      final top = random.nextInt(300);
-      final height = random.nextInt(300);
-      final rectangle = Rectangle<num>(left, width, top, height);
+      final left = random.nextInt(300).as<double>();
+      final width = random.nextInt(300).as<double>();
+      final top = random.nextInt(300).as<double>();
+      final height = random.nextInt(300).as<double>();
+      final rectangle = Rectangle<double>(left, width, top, height);
       setRectangle(context, rectangle);
 
       final x = random.nextDouble();
@@ -63,14 +63,14 @@ void main() {
   });
 }
 
-void setRectangle(RenderingContext context, Rectangle<num> rectangle) {
+void setRectangle(RenderingContext context, Rectangle<double> rectangle) {
   final x1 = rectangle.left;
   final x2 = x1 + rectangle.width;
   final y1 = rectangle.top;
   final y2 = y1 + rectangle.height;
 
-  final positions = <num>[x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
-  context.bufferData(WebGL.ARRAY_BUFFER, Float32List.fromList(positions.cast<double>()), WebGL.STATIC_DRAW);
+  final positions = <double>[x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
+  context.bufferData(WebGL.ARRAY_BUFFER, Float32List.fromList(positions), WebGL.STATIC_DRAW);
 }
 
 Shader createShader(RenderingContext context, int type, String source) {
@@ -79,7 +79,7 @@ Shader createShader(RenderingContext context, int type, String source) {
     ..shaderSource(shader, source)
     ..compileShader(shader);
 
-  final succes = context.getShaderParameter(shader, WebGL.COMPILE_STATUS) as bool;
+  final succes = context.getShaderParameter(shader, WebGL.COMPILE_STATUS).as<bool>();
   if (succes) {
     return shader;
   }
@@ -96,7 +96,7 @@ Program createProgram(RenderingContext context, Shader vertex, Shader fragment) 
     ..attachShader(program, fragment)
     ..linkProgram(program);
 
-  final success = context.getProgramParameter(program, WebGL.LINK_STATUS) as bool;
+  final success = context.getProgramParameter(program, WebGL.LINK_STATUS).as<bool>();
   if (success) {
     return program;
   }
@@ -108,30 +108,32 @@ Program createProgram(RenderingContext context, Shader vertex, Shader fragment) 
 
 const String vertexShaderSource = '''
 attribute vec2 a_position;
-
 uniform vec2 u_resolution;
 
-// все шейдеры имеют функцию main
 void main() {
-  // преобразуем положение в пикселях к диапазону от 0.0 до 1.0
   vec2 zeroToOne = a_position / u_resolution;
-
-  // преобразуем из 0->1 в 0->2
   vec2 zeroToTwo = zeroToOne * 2.0;
-
-  // преобразуем из 0->2 в -1->+1 (пространство отсечения)
   vec2 clipSpace = zeroToTwo - 1.0;
-
   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
 }
 ''';
 
 const String fragmentShaderSource = '''
 precision mediump float;
+uniform vec4 u_color; 
 
-uniform vec4 u_color;
- 
 void main() {
   gl_FragColor = u_color;
 }
 ''';
+
+T unsafeCast<T>(dynamic value) {
+  // ignore: return_of_invalid_type
+  return value;
+}
+
+extension on Object? {
+  T as<T>() {
+    return unsafeCast<T>(this);
+  }
+}
