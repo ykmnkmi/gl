@@ -1,4 +1,9 @@
-html, body, canvas {
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -6,9 +11,17 @@ html, body, canvas {
 }
 
 body {
+  align-items: center;
+  display: flex;
   font-family: 'Courier New', Courier, monospace;
+  justify-content: center;
 }
 
 canvas {
+  border: 1px solid rgb(0 0 255 / 50%);
+  box-shadow: 4px 4px 4px 1px rgb(0 0 255 / 10%);
   display: block;
+  height: 480px;
+  margin: 16px;
+  width: 640px;
 }
